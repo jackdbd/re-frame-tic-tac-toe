@@ -1,6 +1,7 @@
 (ns re-frame-tic-tac-toe.events
   (:require
    [cljs.spec.alpha :as s]
+   [clojure.set :refer [subset?]]
    [re-frame.core :as rf]
    [re-frame-tic-tac-toe.config :refer [debug?]]
    [re-frame-tic-tac-toe.db :as db]
@@ -19,8 +20,7 @@
   (rf/after (partial check-spec-and-throw :re-frame-tic-tac-toe.db/db)))
 
 (def winning-conditions-interceptor
-  "Interceptor that runs after an event handler and stores the todos in Local
-  Storage. It does nothing before the event handler runs."
+  "TODO: add docs for this Interceptor."
   (rf/->interceptor
    :id :winning-conditions-interceptor
    :after
@@ -31,7 +31,8 @@
            old-board-size (get-in old-db [:board :size])
            board-size (get-in db [:board :size])]
        (when (not= old-board-size board-size)
-         (println "TODO: RECOMPUTE WINNING CELL SET"))
+         (println "TODO: RECOMPUTE WINNING CELL COLLECTIONS"))
+      ;;  (rf/assoc-coeffect context :db db)
          context))))
 
 (def game-interceptors
@@ -71,11 +72,31 @@
 ;;    (println "=== cofx ===" cofx event)
 ;;    {:db db/default-db}))
 
+(defn filter-by-val
+  [pred m]
+  (into {} (filter (fn [[_ v]]
+                     (pred v)) m)))
+
+(defn coords->key
+  [coords]
+  (keyword (str (first coords) "-" (last coords))))
+
+(defn make-pred
+  "Build a predicate to check whether any of the winning collection of
+  coordinates (e.g. #{:0-0, :1-1, :2-2}) is a subset of the symbols placed by
+  the player."
+  [player-symbols-set]
+  (fn [coll-of-coords]
+    (let [winning-set (set (map coords->key coll-of-coords))]
+      (comment
+        (println "winning-set" winning-set "player-symbols-set" player-symbols-set))
+      (subset? winning-set player-symbols-set))))
+
 ;; TODO: coeffect for the alert? And maybe replace it with a modal.
 (rf/reg-event-db
  ::place-symbol
  game-interceptors
- (fn [{:keys [board player turn] :as db} [_ cell]]
+ (fn [{:keys [board player turn winning-collections] :as db} [_ cell]]
    (let [k (keyword cell)
          sym (k board)]
      (if sym
@@ -83,7 +104,11 @@
          (js/alert (str "Hey! You can't place a symbol on an occupied cell"))
          db)
        (let [[sym next-player] (if (= :x player) [:x :o] [:o :x])
-             next-board (merge board {k sym})]
+             next-board (merge board {k sym})
+             player-symbols (set (keys (filter-by-val #(= player %) next-board)))
+             player-won? (some (make-pred player-symbols) winning-collections)]
+         (when player-won?
+           (js/alert (str "Player " player " won!")))
          (assoc db :board next-board :player next-player :turn (+ 1 turn)))))))
 
 (rf/reg-event-db

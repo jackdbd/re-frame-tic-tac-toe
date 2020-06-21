@@ -1,7 +1,7 @@
 (ns re-frame-tic-tac-toe.db
   (:require
    [cljs.spec.alpha :as s]
-   [re-frame-tic-tac-toe.logic :refer [winning-cell-sets]]))
+   [re-frame-tic-tac-toe.logic :refer [winning-collections]]))
 
 (s/def ::size pos?)
 
@@ -18,5 +18,5 @@
   "Default application state."
   {:board {:size 3}
    :player :x
-   :winning-cell-sets (winning-cell-sets 3)
+   :winning-collections (winning-collections 3)
    :turn 1})

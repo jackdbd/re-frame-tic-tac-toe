@@ -23,7 +23,7 @@
 (defn- winning-lines [size]
   (transpose (winning-rows size)))
 
-(defn winning-cell-sets [size]
+(defn winning-collections [size]
   (concat (winning-rows size)
           (winning-lines size)
           (winning-diags size)))
