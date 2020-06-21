@@ -1,7 +1,40 @@
+:root {
+    --player-x-color: red;
+    --player-o-color: blue;
+}
+
 .board {
-    background-color: lightgray;
+    background-color: white;
 }
 
 div {
     background-color: papayawhip;
+}
+
+.cell-frame {
+    fill: none;
+    stroke: darkgray;
+}
+
+.player-x:hover {
+    fill: var(--player-x-color);
+    opacity: 0.5;
+    /* outline: 3px solid var(--player-x-color); */
+}
+
+.player-o:hover {
+    fill: var(--player-o-color);
+    opacity: 0.5;
+    /* outline: 3px solid var(--player-o-color); */
+}
+
+.x-symbol {
+    stroke: var(--player-x-color);
+    stroke-width: 3;
+}
+
+.o-symbol {
+    fill: none;
+    stroke: var(--player-o-color);
+    stroke-width: 3;
 }
