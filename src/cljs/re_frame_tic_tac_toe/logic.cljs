@@ -23,7 +23,22 @@
 (defn- winning-lines [size]
   (transpose (winning-rows size)))
 
-(defn winning-collections [size]
+(defn coords->key
+  "Convert a pair of coordinates into a keyword (e.g. [1 2] -> :1-2)."
+  [coords]
+  (keyword (str (first coords) "-" (last coords))))
+
+(defn winning-collections
+  "Collections of "
+  [size]
   (concat (winning-rows size)
           (winning-lines size)
           (winning-diags size)))
+
+(defn winning-collections-keys
+  [size]
+  (map #(map coords->key %) (winning-collections size)))
+
+(defn winning-collections-sets
+  [size]
+  (map #(set %) (winning-collections-keys size)))

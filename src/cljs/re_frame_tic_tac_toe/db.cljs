@@ -1,7 +1,6 @@
 (ns re-frame-tic-tac-toe.db
   (:require
-   [cljs.spec.alpha :as s]
-   [re-frame-tic-tac-toe.logic :refer [winning-collections]]))
+   [cljs.spec.alpha :as s]))
 
 (s/def ::size pos?)
 
@@ -18,5 +17,6 @@
   "Default application state."
   {:board {:size 3}
    :player :x
-   :winning-collections (winning-collections 3)
    :turn 1})
+
+;; TODO: store winning-collections-sets in Local Storage?

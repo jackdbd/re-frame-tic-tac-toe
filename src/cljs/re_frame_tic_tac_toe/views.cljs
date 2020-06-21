@@ -1,15 +1,15 @@
 (ns re-frame-tic-tac-toe.views
   (:require
    [re-frame.core :as rf]
-   [re-frame-tic-tac-toe.subs :as subs]
+   [re-frame-tic-tac-toe.subs :refer [<sub] :as subs]
    [re-frame-tic-tac-toe.events :as events]
    ))
 
 (defn header []
-  (let [player-label (rf/subscribe [::subs/player-label])
-        turn (rf/subscribe [::subs/turn])]
+  (let [player-label @(rf/subscribe [::subs/player-label])
+        turn @(rf/subscribe [::subs/turn])]
     [:header
-     @player-label "'s turn" " (turn " @turn ")"]))
+     player-label "'s turn" " (turn " turn ")"]))
 
 (defn x-symbol
   "Symbol for player X."
@@ -39,17 +39,19 @@
   https://stackoverflow.com/questions/12443309/svg-detect-onclick-events-on-fill-none
   https://www.w3.org/TR/SVG/interact.html#PointerEventsProperty"
   [{:keys [data-coords size]}]
-  (let [css-class (rf/subscribe [::subs/player-class])]
-    [:rect.cell-frame {:class @css-class
+  (let [css-class @(rf/subscribe [::subs/player-class])]
+    [:rect.cell-frame {:class css-class
                        :x 0 :y 0 :width size :height size
                        :pointer-events "visible" :data-coords data-coords}]))
 
+;; TODO: does this really have to re-run every timeany other cell on the board
+;; changes? Maybe use a query for the subscription?
 (defn cell [{:keys [column key row size]}]
   (let [x (* column size)
         y (* row size)
         data-coords (str row "-" column)
-        board (rf/subscribe [::subs/board])
-        symbol (key @board)]
+        board @(rf/subscribe [::subs/board])
+        symbol (key board)]
     [:g.cell {:transform (str "translate(" x "," y ")")}
      [cell-frame {:size size :data-coords data-coords}]
      (cond
@@ -57,17 +59,20 @@
        (= :o symbol) [o-symbol {:padding 5 :size size :data-coords data-coords}]
        :else nil)]))
 
+;; TODO: I suspect dispatching an event with the winning-collections-sets (huge)
+;; is a really bad idea, performance-wise. Think about alternative solutions.
+;; Maybe use a coeffect? Can I use an interceptor?
 (defn board
   "The game board."
   []
-  (let [board (rf/subscribe [::subs/board])
-        size (:size @board)
+  (let [winning-collections-sets @(rf/subscribe [::subs/winning-collections-sets])
+        size (<sub [::subs/board-size])
         cell-size-px 80
         size-px (* size cell-size-px)]
     [:svg.board {:width size-px :height size-px
                  :on-click (fn [event]
                              (when-let [coords (-> event .-target .-dataset .-coords)]
-                               (rf/dispatch [::events/place-symbol coords])))}
+                               (rf/dispatch [::events/place-symbol coords winning-collections-sets])))}
      (for [r (range size)
            c (range size)]
        (let [k (keyword (str r "-" c))]
@@ -90,6 +95,8 @@
    [:button {:type "button" :on-click #(rf/dispatch [::events/start-over])}
     "Click to start over"]
    [board-size-selector]])
+
+;; TODO: add history component with a filter to show moves of #{:player-x :player-o :all}
 
 (defn app []
   [:<>
