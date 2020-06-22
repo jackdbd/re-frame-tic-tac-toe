@@ -5,7 +5,8 @@
    [day8.re-frame.tracing :refer-macros [fn-traced]]
    [re-frame.core :as rf]
    [re-frame-tic-tac-toe.config :refer [debug?]]
-   [re-frame-tic-tac-toe.db :as db]))
+   [re-frame-tic-tac-toe.db :as db]
+   [re-frame-tic-tac-toe.effects :as effects]))
 
 (defn- check-spec-and-throw
   "Throws an exception if `db` doesn't match the spec `a-spec`."
@@ -71,23 +72,43 @@
     (subset? winning-set player-symbols-set)))
 
 ;; TODO: coeffect for the alert? And maybe replace it with a modal.
-(rf/reg-event-db
+;; (rf/reg-event-db
+;;  ::place-symbol
+;;  game-interceptors
+;;  (fn [{:keys [board player turn] :as db} [_ cell winning-collections-sets]]
+;;    (let [k (keyword cell)
+;;          sym (k board)]
+;;      (if sym
+;;        (do
+;;          (js/alert (str "Hey! You can't place a symbol on an occupied cell"))
+;;          db)
+;;        (let [[sym next-player] (if (= :x player) [:x :o] [:o :x])
+;;              next-board (merge board {k sym})
+;;              player-symbols (set (keys (filter-by-val #(= player %) next-board)))
+;;              player-won? (some (make-pred player-symbols) winning-collections-sets)]
+;;          (when player-won?
+;;            (js/alert (str "Player " player " won!")))
+;;          (assoc db :board next-board :player next-player :turn (+ 1 turn)))))))
+
+(rf/reg-event-fx
  ::place-symbol
  game-interceptors
- (fn [{:keys [board player turn] :as db} [_ cell winning-collections-sets]]
-   (let [k (keyword cell)
+ (fn [{:keys [db]} [_ cell winning-collections-sets]]
+   (let [player (:player db)
+         board (:board db)
+         turn (:turn db)
+         k (keyword cell)
          sym (k board)]
      (if sym
-       (do
-         (js/alert (str "Hey! You can't place a symbol on an occupied cell"))
-         db)
+       {::effects/alert (str "Hey! You can't place a symbol on an occupied cell") :db db}
        (let [[sym next-player] (if (= :x player) [:x :o] [:o :x])
              next-board (merge board {k sym})
              player-symbols (set (keys (filter-by-val #(= player %) next-board)))
-             player-won? (some (make-pred player-symbols) winning-collections-sets)]
-         (when player-won?
-           (js/alert (str "Player " player " won!")))
-         (assoc db :board next-board :player next-player :turn (+ 1 turn)))))))
+             player-won? (some (make-pred player-symbols) winning-collections-sets)
+             next-db (assoc db :board next-board :player next-player :turn (+ 1 turn))]
+         (if player-won?
+           {::effects/alert (str "Player " player " won!") :db next-db}
+           {:db next-db}))))))
 
 (rf/reg-event-db
  ::change-board-size
