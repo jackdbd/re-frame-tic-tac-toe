@@ -1,44 +1,65 @@
-(ns re-frame-tic-tac-toe.logic)
-
-(defn board-coordinates
-  "[x y] coordinates of a board of size `size`."
-  [size]
-  (for [x (range size)
-        y (range size)]
-    [x y]))
+(ns re-frame-tic-tac-toe.logic
+  (:require [clojure.set :refer [subset?]]))
 
 (defn- transpose
   "Transpose a matrix"
   [rows]
   (apply mapv vector rows))
 
-(defn- winning-diags [size]
-  (let [coords (board-coordinates size)]
-    [(filter #(= (first %) (second %)) coords)
-     (filter #(= (dec size) (reduce + %)) coords)]))
+(defn- on-diag-top-left-to-bottom-right?
+  [[row col]]
+  (= row col))
 
-(defn- winning-rows [size]
-  (partition size (board-coordinates size)))
+(defn- make-on-diag-bottom-left-to-top-right?
+  [side]
+  (fn on-diag-bottom-left-to-top-right? [[row col]]
+    (= (dec side) (+ row col))))
 
-(defn- winning-lines [size]
-  (transpose (winning-rows size)))
+(defn make-i->coords
+  [side]
+  (fn i->coords
+    [i]
+    [(quot i side) (mod i side)]))
 
-(defn coords->key
-  "Convert a pair of coordinates into a keyword (e.g. [1 2] -> :1-2)."
-  [coords]
-  (keyword (str (first coords) "-" (last coords))))
+(defn make-coords->i
+  [side]
+  (fn coords->i [[row col]]
+    (-> (* side row) (+ col))))
 
-(defn winning-collections
-  "Collections of "
-  [size]
-  (concat (winning-rows size)
-          (winning-lines size)
-          (winning-diags size)))
+(defn i->key [i]
+  (keyword (str i)))
 
-(defn winning-collections-keys
-  [size]
-  (map #(map coords->key %) (winning-collections size)))
+(defn indexes->keywords
+  [indexes]
+  (map #(-> % str keyword) indexes))
 
-(defn winning-collections-sets
-  [size]
-  (map #(set %) (winning-collections-keys size)))
+(def indexes->set-of-keys
+  (comp set indexes->keywords))
+
+;; TODO spec on function + instrumentation
+;; TODO: avoid i->coords and coords->i. How to detect if a cell is on a diagonal, given its index?
+(defn winning-sets
+  "All winning combinations."
+  [n]
+  (let [side (.sqrt js/Math n)
+        rows (partition side (range n))
+        rows-sets (map indexes->set-of-keys rows)
+        columns (transpose rows)
+        columns-sets (map indexes->set-of-keys columns)
+        i->coords (make-i->coords side)
+        coords->i (make-coords->i side)
+        on-diag-bottom-left-to-top-right? (make-on-diag-bottom-left-to-top-right? side)
+        coords-on-diag-1 (->> (range n) (map i->coords) (filter on-diag-top-left-to-bottom-right?))
+        coords-on-diag-2 (->> (range n) (map i->coords) (filter on-diag-bottom-left-to-top-right?))
+        diag-1-set (->> coords-on-diag-1 (map coords->i) (map i->key) set)
+        diag-2-set (->> coords-on-diag-2 (map coords->i) (map i->key) set)]
+    (concat rows-sets
+            columns-sets
+            [diag-1-set diag-2-set])))
+
+(defn make-winning-subset?
+  "Build a predicate to check whether any of the winning sets is a subset of
+  the marks placed by the player."
+  [player-marks-set]
+  (fn winning-subset? [winning-set]
+    (subset? winning-set player-marks-set)))

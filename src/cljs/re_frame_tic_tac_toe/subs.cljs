@@ -1,7 +1,6 @@
 (ns re-frame-tic-tac-toe.subs
   (:require
-   [re-frame.core :as rf]
-   [re-frame-tic-tac-toe.logic :refer [winning-collections-sets]]))
+   [re-frame.core :as rf]))
 
 (rf/reg-sub
  ::player
@@ -37,19 +36,28 @@
    (:board db)))
 
 (rf/reg-sub
- ::board-size
+ ::board-side
  (fn [db]
-   (get-in db [:board :size])))
+   (.sqrt js/Math (count (:board db)))))
 
 (rf/reg-sub
- ::winning-collections-sets
+ ::cells-total
+ (fn [db]
+   (count (:board db))))
+
+(rf/reg-sub
+ ::cell-coords
  (fn [_ _]
-   [(rf/subscribe [::board-size])])
- (fn [[size] _]
-   (winning-collections-sets size)))
+   [(rf/subscribe [::cells-total])
+    (rf/subscribe [::board-side])])
+ (fn [[n side] _]
+   (let [i->coords (fn [i] [(quot i side) (mod i side)])]
+     (map i->coords (range n)))))
 
 (def <sub
   "Alternative to avoid having to deref the returned value in a view.
    usage: foo (<sub [::subs/foo])
    https://github.com/day8/re-frame/blob/04433cfa60a8c8116e2b6aefd8fd253014285229/src/re_frame/subs.cljc#L106"
   (comp deref rf/subscribe))
+
+

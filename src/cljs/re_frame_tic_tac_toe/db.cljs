@@ -2,21 +2,27 @@
   (:require
    [cljs.spec.alpha :as s]))
 
-(s/def ::size pos?)
-
-(s/def ::player
-  #{:x :o})
-
 (s/def ::turn pos?)
+(s/def ::status #{:playing :game-over})
+(s/def ::player #{:x :o})
+(s/def ::mark (s/nilable ::player))
+(s/def ::cell-index keyword) ;; TODO: make it better
+(s/def ::board (s/map-of ::cell-index ::mark))
 
-(s/def ::board (s/keys :req-un [::size]))
+(s/def ::db (s/keys :req-un [::board ::player ::status ::turn]))
 
-(s/def ::db (s/keys :req-un [::board ::player ::turn]))
+(defn new-board
+  [n]
+  (zipmap (->> (range n) (map #(keyword (str %))))
+          (->> (repeat nil) (take n))))
+
+(defn new-db
+  [n]
+  {:board (new-board n)
+   :player :x
+   :status :playing
+   :turn 1})
 
 (def default-db
   "Default application state."
-  {:board {:size 3}
-   :player :x
-   :turn 1})
-
-;; TODO: store winning-collections-sets in Local Storage?
+  (new-db 9))

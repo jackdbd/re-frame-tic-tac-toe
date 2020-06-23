@@ -1,6 +1,13 @@
 :root {
     --player-x-color: red;
     --player-o-color: blue;
+    --mark-stroke-width: 0.5rem;
+}
+
+/* CSS reset for margins and paddings */
+body {
+    margin: 0;
+    padding: 0;
 }
 
 .board {
@@ -11,35 +18,54 @@ div {
     background-color: papayawhip;
 }
 
-.cell-frame {
+/*
+  Important: since we want the SVG <rect> to be invisible, we use fill:none in,
+  but this would prevent mouse events from working properly on the element. We
+  fix this issue by setting pointer-events to `visible`.
+
+  See also:
+  https://stackoverflow.com/questions/12443309/svg-detect-onclick-events-on-fill-none
+  https://www.w3.org/TR/SVG/interact.html#PointerEventsProperty
+*/
+.cell-clickable {
     fill: none;
-    /* stroke: darkgray; */
+    pointer-events: visible;
 }
 
 .player-x:hover {
     fill: var(--player-x-color);
     opacity: 0.5;
-    /* outline: 3px solid var(--player-x-color); */
 }
 
 .player-o:hover {
     fill: var(--player-o-color);
     opacity: 0.5;
-    /* outline: 3px solid var(--player-o-color); */
 }
 
-.x-symbol {
+.x-mark {
     stroke: var(--player-x-color);
-    stroke-width: 3;
+    stroke-width: var(--mark-stroke-width);
 }
 
-.o-symbol {
+.o-mark {
     fill: none;
     stroke: var(--player-o-color);
-    stroke-width: 3;
+    stroke-width: var(--mark-stroke-width);
 }
 
 .track {
     stroke: darkgray;
-    stroke-width: 1%;
+    stroke-width: 0.5rem;
+    /* stroke-dasharray: 8 8; */
+}
+
+.centered {
+    display: flex;
+    align-items: center; /* Vertical center alignment */
+    justify-content: center; /* Horizontal center alignment */
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
 }
