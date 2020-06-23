@@ -13,7 +13,7 @@ div {
 
 .cell-frame {
     fill: none;
-    stroke: darkgray;
+    /* stroke: darkgray; */
 }
 
 .player-x:hover {
@@ -37,4 +37,9 @@ div {
     fill: none;
     stroke: var(--player-o-color);
     stroke-width: 3;
+}
+
+.track {
+    stroke: darkgray;
+    stroke-width: 1%;
 }

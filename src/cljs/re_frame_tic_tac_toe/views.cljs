@@ -59,6 +59,14 @@
        (= :o symbol) [o-symbol {:padding 5 :size size :data-coords data-coords}]
        :else nil)]))
 
+(defn tracks
+  [size-px cell-px]
+  [:g.tracks
+   (for [x (range cell-px size-px cell-px)]
+     ^{:key (str "track-hor-" x)} [:line.track {:x1 x :y1 0 :x2 x :y2 size-px}])
+   (for [y (range cell-px size-px cell-px)]
+     ^{:key (str "track-ver-" y)} [:line.track {:x1 0 :y1 y :x2 size-px :y2 y}])])
+
 ;; TODO: I suspect dispatching an event with the winning-collections-sets (huge)
 ;; is a really bad idea, performance-wise. Think about alternative solutions.
 ;; Maybe use a coeffect? Can I use an interceptor?
@@ -73,10 +81,11 @@
                  :on-click (fn [event]
                              (when-let [coords (-> event .-target .-dataset .-coords)]
                                (rf/dispatch [::events/place-symbol coords winning-collections-sets])))}
-     (for [r (range size)
-           c (range size)]
-       (let [k (keyword (str r "-" c))]
-         ^{:key k} [cell {:column c :key k :row r :size cell-size-px}]))]))
+     [tracks size-px cell-size-px]
+     [:g.cells
+      (for [r (range size) c (range size)]
+        (let [k (keyword (str r "-" c))]
+          ^{:key k} [cell {:column c :key k :row r :size cell-size-px}]))]]))
 
 (defn board-size-selector
   []
