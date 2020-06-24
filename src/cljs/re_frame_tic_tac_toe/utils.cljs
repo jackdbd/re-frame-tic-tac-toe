@@ -11,3 +11,16 @@
   [pred m]
   (into {} (filter (fn [[_ v]]
                      (pred v)) m)))
+
+;; TODO: avoid i->coords and coords->i. How to detect if a cell is on a diagonal, given its index?
+
+(defn make-i->coords
+  [side]
+  (fn i->coords
+    [i]
+    [(quot i side) (mod i side)]))
+
+(defn make-coords->i
+  [side]
+  (fn coords->i [[row col]]
+    (-> (* side row) (+ col))))

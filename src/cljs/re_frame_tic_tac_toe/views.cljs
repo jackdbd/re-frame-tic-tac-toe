@@ -3,6 +3,7 @@
    [re-frame.core :as rf]
   ;;  [re-frame-tic-tac-toe.message :as msg]
    [re-frame-tic-tac-toe.subs :refer [<sub] :as subs]
+   [re-frame-tic-tac-toe.modal :refer [modal-panel]]
    [re-frame-tic-tac-toe.events :as events]))
 
 ;; (defonce worker (js/Worker. "js/compiled/worker.js"))
@@ -74,8 +75,7 @@
   [board side cell-px]
   (fn coords->cell
     [i [row col]]
-    (let [k (keyword (str i))
-          mark (k board)
+    (let [mark (get board i)
           key (str row "-" col " (side " side "; cell-px " cell-px ")")]
       ^{:key key} [cell {:col col :row row :side side :size-px cell-px :mark mark}])))
 
@@ -109,18 +109,27 @@
                :on-change #(rf/dispatch [::events/change-board (-> % .-target .-value)])}
       [:option {:value "9"} "3x3"]
       [:option {:value "16"} "4x4"]
-      [:option {:value "25"} "5x5"]]]
-    ))
+      [:option {:value "25"} "5x5"]]]))
 
 (defn footer []
   [:footer
-   [:button {:type "button" :on-click #(rf/dispatch [::events/start-over])}
+   [:button {:type "button" :on-click #(rf/dispatch [::events/new-game])}
     "Click to start over"]
    [board-size-selector]])
 
+(defn modal-window
+  []
+  (let [child @(rf/subscribe [::subs/modal])]
+    (when child
+      [modal-panel {:child [child]
+                    :on-dismiss #(rf/dispatch [::events/close-modal])
+                    :size :small}])))
+
 (defn app []
-  [:div.centered
-   [:div.column
-    [header]
-    [game-board]
-    [footer]]])
+  [:<>
+   [modal-window]
+   [:div.centered
+    [:div.column
+     [header]
+     [game-board]
+     [footer]]]])

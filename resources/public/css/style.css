@@ -14,10 +14,6 @@ body {
     background-color: white;
 }
 
-div {
-    background-color: papayawhip;
-}
-
 /*
   Important: since we want the SVG <rect> to be invisible, we use fill:none in,
   but this would prevent mouse events from working properly on the element. We

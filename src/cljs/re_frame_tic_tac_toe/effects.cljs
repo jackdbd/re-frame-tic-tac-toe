@@ -3,6 +3,6 @@
    [re-frame.core :as rf]))
 
 (rf/reg-fx
- ::alert
+ ::log
  (fn [value]
-   (js/alert value)))
+   (.warn js/console value)))

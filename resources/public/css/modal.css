@@ -1,0 +1,24 @@
+.modal-wrapper {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000
+}
+
+.modal-backdrop {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    opacity: 0.9;
+    z-index: 1;
+}
+
+.modal-child {
+    margin: auto;
+    margin-top: 30px;
+    z-index: 2;
+}
