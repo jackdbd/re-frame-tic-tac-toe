@@ -47,8 +47,8 @@
 (rf/reg-event-db
  ::change-board
  game-interceptors
- (fn [_ [_ n-as-str]]
-   (merge db/default-db {:board (db/new-board (js/parseInt n-as-str 10))})))
+ (fn-traced [_ [_ n-as-str]]
+            (merge db/default-db {:board (db/new-board (js/parseInt n-as-str 10))})))
 
 (rf/reg-event-db
  ::close-modal
@@ -64,21 +64,21 @@
     :dispatch [::close-modal]
     ::effects/log "NEW GAME"}))
 
+; If the button "New Game" is clicked while the replay is still going on (i.e
+; there are still some ::replay-move events in the re-frame event queue) we have
+; a different history from the one we had at the time the event was scheduled.
+; With a new game the history is empty, so we have no replayed moves to show.
 (rf/reg-event-db
  ::replay-move
  game-interceptors
- (fn-traced [{:keys [history replayed-moves] :as db} [_ i]]
-   (assoc db :replayed-moves (conj replayed-moves (nth history i)))))
+ (fn [{:keys [history replayed-moves] :as db} [_ i]]
+   (if (nil? (get history i))
+     db
+     (assoc db :replayed-moves (conj replayed-moves (nth history i))))))
 
 (defn i->dispatch-replay-move
   [i]
   {:ms (* i 500) :dispatch [::replay-move i]})
-
-; TODO: if I click "New Game" while the replay is still going on (i.e while
-; re-frame is still dispatching :replay-move events) I get errors like this:
-; No item 4 in vector of length 0
-; This is because on a new game, replayed-moves in db are []
-; How to fix this issue? By passing db to i->dispatch-replay-move ?
 
 (rf/reg-event-fx
  ::game-over
