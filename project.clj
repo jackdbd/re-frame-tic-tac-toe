@@ -52,7 +52,7 @@
                             ["shell" "open" "target/build-report.html"]]
             "karma" ["with-profile" "prod" "do"
                      ["shadow" "compile" "karma-test"]
-                     ["shell" "karma" "start" "--single-run" "--reporters" "junit,dots"]]}
+                     ["shell" "karma" "start" "--single-run" "--reporters" "verbose,dots"]]}
   :profiles {:dev {:dependencies [[binaryage/devtools "1.0.0"]
                                   [day8.re-frame/re-frame-10x "0.6.5"]]
                    :source-paths ["dev"]}
