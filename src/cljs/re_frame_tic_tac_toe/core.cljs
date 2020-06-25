@@ -5,13 +5,13 @@
    [re-frame-tic-tac-toe.events :as events]
    [re-frame-tic-tac-toe.views :as views]
    [re-frame-tic-tac-toe.config :as config]
-   [devtools.core :as devtools]
+  ;  [devtools.core :as devtools]
    ))
 
 
 (defn dev-setup []
   ;; enable https://github.com/binaryage/cljs-devtools
-  (devtools/install!)
+  ; (devtools/install!)
   ;; This line allows us to use `(println "foo")` in place of (.log js/console "foo")
   (enable-console-print!))
 
