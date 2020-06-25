@@ -6,12 +6,12 @@
 
 (deftest on-new-game-test
   (testing "returns the expected db, dispatches a close-modal event, and logs (effect)"
-    (let [n 9
-          board (db/new-board n)
-          expected {:db (db/new-db n)
+    (let [app-db (-> {}
+                     (events/on-initialize-db [::events/initialize-db]))
+          expected {:db app-db
                     :dispatch [::events/close-modal]
                     ::effects/log "NEW GAME"}
-          cofx {:db {:board board}}]
+          cofx {:db app-db}]
       (is (= expected (events/on-new-game cofx))))))
 
 (deftest on-place-mark-test

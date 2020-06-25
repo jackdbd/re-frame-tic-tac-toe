@@ -70,11 +70,17 @@
      "player-x"
      "player-o")))
 
+(defn n+side->coords
+  "Computation function to be used in a ::cell-coords subscription."
+  [[n side] _]
+  (let [i->coords (fn [i] [(quot i side) (mod i side)])]
+    (map i->coords (range n))))
+
 (rf/reg-sub
  ::cell-coords
+ ;; signal function
  (fn [_ _]
    [(rf/subscribe [::cells-total])
     (rf/subscribe [::board-side])])
- (fn [[n side] _]
-   (let [i->coords (fn [i] [(quot i side) (mod i side)])]
-     (map i->coords (range n)))))
+ ;; computation function
+ n+side->coords)
