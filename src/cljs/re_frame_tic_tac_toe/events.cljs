@@ -74,6 +74,12 @@
   [i]
   {:ms (* i 500) :dispatch [::replay-move i]})
 
+; TODO: if I click "New Game" while the replay is still going on (i.e while
+; re-frame is still dispatching :replay-move events) I get errors like this:
+; No item 4 in vector of length 0
+; This is because on a new game, replayed-moves in db are []
+; How to fix this issue? By passing db to i->dispatch-replay-move ?
+
 (rf/reg-event-fx
  ::game-over
  game-interceptors

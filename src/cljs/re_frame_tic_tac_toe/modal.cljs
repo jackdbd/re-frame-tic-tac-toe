@@ -2,7 +2,9 @@
   (:require
    [re-frame.core :as rf]
    [re-frame-tic-tac-toe.subs :as subs]
-   [re-frame-tic-tac-toe.utils :refer [make-i->coords]]))
+   [re-frame-tic-tac-toe.utils :refer [make-i->coords]]
+   [re-frame-tic-tac-toe.views.marks :refer [o-mark x-mark]]
+   [re-frame-tic-tac-toe.views.tracks :refer [tracks]]))
 
 ;; TODO call on-dismiss on ESC (on-keydown seems not to work)
 
@@ -10,42 +12,13 @@
 
 ;; TODO: think about a better solution for the modals
 
-(defn tracks
-  "Horizontal and vertical lines (i.e. the grid of Tic Tac Toe)."
-  [side-px cell-px]
-  [:g.tracks
-   (for [x (range cell-px side-px cell-px)]
-     ^{:key (str "track-hor-" x)} [:line.track {:x1 x :y1 0 :x2 x :y2 side-px}])
-   (for [y (range cell-px side-px cell-px)]
-     ^{:key (str "track-ver-" y)} [:line.track {:x1 0 :y1 y :x2 side-px :y2 y}])])
-
-(defn x-mark
-  "Symbol for player X."
-  [{:keys [data-index padding size-px]}]
-  [:<>
-   [:line.x-mark {:x1 padding :y1 padding
-                  :x2 (- size-px padding) :y2 (- size-px padding)
-                  :data-index data-index}]
-   [:line.x-mark {:x1 padding :y1 (- size-px padding)
-                  :x2 (- size-px padding) :y2 padding
-                  :data-index data-index}]])
-
-(defn o-mark
-  "Symbol for player O."
-  [{:keys [data-index padding size-px]}]
-  (let [r (- (/ size-px 2) padding)
-        cx (+ r padding)
-        cy cx]
-    [:circle.o-mark {:cx cx :cy cy :r r
-                     :data-index data-index}]))
-
 (defn cell [{:keys [col row mark size-px]}]
   (let [x (* col size-px)
         y (* row size-px)]
     [:g.cell {:transform (str "translate(" x "," y ")")}
      (cond
-       (= :x mark) [x-mark {:padding 5 :size-px size-px :data-index "NOT USED"}]
-       (= :o mark) [o-mark {:padding 5 :size-px size-px :data-index "NOT USED"}]
+       (= :x mark) [x-mark {:padding 5 :size-px size-px}]
+       (= :o mark) [o-mark {:padding 5 :size-px size-px}]
        :else nil)]))
 
 (defn make-history-entry->cell
@@ -74,7 +47,7 @@
      [replayed-moves side cell-side-px]]))
 
 (defn make-modal-child-game-over
-  "TODO: docs"
+  "High order function that returns a modal-child-game-over component."
   [{:keys [description ok on-click title] :or {ok "Ok" title "" description ""}}]
   (fn modal-child-game-over
     []
@@ -91,7 +64,7 @@
      [:button {:type :button :on-click on-click} ok]]))
 
 (defn make-modal-child-invalid-move
-  "TODO: docs"
+  "High order function that returns a modal-child-invalid-move component."
   [{:keys [description ok on-click title] :or {ok "Ok" title "" description ""}}]
   (fn modal-child-invalid-move
     []

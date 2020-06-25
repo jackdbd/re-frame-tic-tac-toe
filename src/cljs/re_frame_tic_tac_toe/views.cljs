@@ -1,10 +1,12 @@
 (ns re-frame-tic-tac-toe.views
   (:require
    [re-frame.core :as rf]
+   [re-frame-tic-tac-toe.events :as events]
   ;;  [re-frame-tic-tac-toe.message :as msg]
-   [re-frame-tic-tac-toe.subs :refer [<sub] :as subs]
    [re-frame-tic-tac-toe.modal :refer [modal-panel]]
-   [re-frame-tic-tac-toe.events :as events]))
+   [re-frame-tic-tac-toe.subs :refer [<sub] :as subs]
+   [re-frame-tic-tac-toe.views.marks :refer [o-mark x-mark]]
+   [re-frame-tic-tac-toe.views.tracks :refer [tracks]]))
 
 ;; (defonce worker (js/Worker. "js/compiled/worker.js"))
 
@@ -23,26 +25,6 @@
     [:header
      player-label "'s turn" " (turn " turn ")"]))
 
-(defn x-mark
-  "Symbol for player X."
-  [{:keys [data-index padding size-px]}]
-  [:<>
-   [:line.x-mark {:x1 padding :y1 padding
-                  :x2 (- size-px padding) :y2 (- size-px padding)
-                  :data-index data-index}]
-   [:line.x-mark {:x1 padding :y1 (- size-px padding)
-                  :x2 (- size-px padding) :y2 padding
-                  :data-index data-index}]])
-
-(defn o-mark
-  "Symbol for player O."
-  [{:keys [data-index padding size-px]}]
-  (let [r (- (/ size-px 2) padding)
-        cx (+ r padding)
-        cy cx]
-    [:circle.o-mark {:cx cx :cy cy :r r
-                     :data-index data-index}]))
-
 (defn cell-rect
   "Rectangular clickable area for the cell."
   [{:keys [data-index size-px]}]
@@ -50,15 +32,6 @@
     [:rect.cell-clickable {:class css-class
                            :x 0 :y 0 :width size-px :height size-px
                            :data-index data-index}]))
-
-(defn tracks
-  "Horizontal and vertical lines (i.e. the grid of Tic Tac Toe)."
-  [side-px cell-px]
-  [:g.tracks
-   (for [x (range cell-px side-px cell-px)]
-     ^{:key (str "track-hor-" x)} [:line.track {:x1 x :y1 0 :x2 x :y2 side-px}])
-   (for [y (range cell-px side-px cell-px)]
-     ^{:key (str "track-ver-" y)} [:line.track {:x1 0 :y1 y :x2 side-px :y2 y}])])
 
 (defn cell [{:keys [col row mark side size-px]}]
   (let [x (* col size-px)
