@@ -1,16 +1,24 @@
 {
-	"name": "re-frame-tic-tac-toe",
-	"dependencies": {
-		"highlight.js": "9.18.1",
-		"react": "16.13.1",
-		"react-dom": "16.13.1",
-		"react-highlight.js": "1.0.7"
-	},
-	"devDependencies": {
-		"karma": "4.4.1",
-		"karma-chrome-launcher": "3.1.0",
-		"karma-cljs-test": "0.1.0",
-		"karma-verbose-reporter": "0.0.6",
-		"shadow-cljs": "2.9.3"
-	}
+  "name": "re-frame-tic-tac-toe",
+  "author": "Giacomo Debidda <giacomo@giacomodebidda.com> (https://giacomodebidda.com/)",
+  "license": "MIT",
+  "keywords": [
+    "re-frame",
+    "tic-tac-toe"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "karma": "^6.4.1",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-cljs-test": "^0.1.0",
+    "karma-verbose-reporter": "^0.0.8",
+    "shadow-cljs": "^2.20.5",
+    "wrangler": "^2.1.11"
+  }
 }

@@ -1,0 +1,36 @@
+{:deps true
+
+ :builds
+ ;; https://shadow-cljs.github.io/docs/UsersGuide.html#_build_configuration
+ {:app {:target :browser
+        :output-dir "resources/public/js/compiled"
+        :asset-path "/js/compiled"
+        :modules {:shared {:entries []}
+                  :main {:depends-on #{:shared}
+                         :init-fn re-frame-tic-tac-toe.core/init}
+                  :worker {:depends-on #{:shared}
+                           :web-worker true
+                           :init-fn re-frame-tic-tac-toe.worker/init}}
+        :dev {:compiler-options {:closure-defines {re-frame.trace.trace-enabled? true
+                                                   day8.re-frame.tracing.trace-enabled? true}}}
+        :release {:build-options {:ns-aliases {day8.re-frame.tracing day8.re-frame.tracing-stubs}}}
+        :devtools {:browser-inject :main
+                   :preloads [devtools.preload day8.re-frame-10x.preload]
+                   :http-root "resources/public"
+                   :http-port 8280}}
+
+  :browser-test {:target :browser-test
+                 :ns-regexp "-test$"
+                 :runner-ns shadow.test.browser
+                 :test-dir "target/browser-test"
+                 :devtools {:http-root "target/browser-test"
+                            :http-port 8290}}
+
+  :karma-test {:target :karma
+               :ns-regexp "-test$"
+               :output-to "target/karma-test.js"}}
+ 
+ ;; tests are served via http://localhost:8290
+;;  :dev-http {8290 "target/browser-test"}
+
+ :nrepl {:port 8777}}

@@ -1,0 +1,105 @@
+{:tasks
+ {:requires ([babashka.fs :as fs])
+
+  app:deploy
+  {:doc "Deploy the app to Cloudflare Pages"
+;;    :depends [install app:release]
+   :task (let [publish-dir "resources/public"
+               project-name (System/getenv "CLOUDFLARE_PAGES_PROJECT_NAME")
+               cmd (str "npx wrangler pages publish " publish-dir " --project-name " project-name)]
+           (println cmd)
+           (shell cmd))}
+
+  -app:open-browser
+  {:doc "Open the app in a browser"
+   :task (shell "xdg-open http://localhost:8280/")}
+
+  app:release
+  {:doc "Compile an optimized release build of the re-frame app using shadow-cljs"
+   :depends [install]
+   :task (shell "npx shadow-cljs release app")}
+
+  app:release-report
+  {:doc "Generate a build report of the optimized release build"
+   :depends [install]
+   :task (do (println "Generate build report")
+             (shell "npx shadow-cljs run shadow.cljs.build-report app target/build-report.html")
+             (println "Open build report in browser")
+             (shell "xdg-open target/build-report.html"))}
+
+
+  -app:watch
+  {:doc "Watch a development build of the re-frame app using shadow-cljs"
+   :depends [install]
+   :extra-deps {binaryage/devtools {:mvn/version "1.0.6"}
+                day8.re-frame/re-frame-10x {:mvn/version "1.5.0"}}
+   :extra-paths ["dev"]
+   :task (shell "npx shadow-cljs watch app browser-test karma-test")}
+
+  audit
+  {:doc "Audit npm packages"
+   :task (shell "npm audit --audit-level moderate")}
+
+  clean
+  {:doc "Remove dependencies and compilation artifacts"
+   :task (run '-clean {:parallel true})}
+
+  -clean
+  {:depends [clean:artifacts clean:node-modules]}
+
+  clean:artifacts
+  {:doc "Remove compilation artifacts"
+   :task (do (println "remove build-report")
+             (fs/delete-if-exists "target/build-report.html")
+             (println "remove browser-test")
+             (fs/delete-tree "target/browser-test")
+             (println "remove karma-test")
+             (fs/delete-if-exists "target/karma-test.js"))}
+
+  clean:node-modules
+  {:doc "Remove node_modules"
+   :task (do (println "remove node_modules")
+             (fs/delete-tree "node_modules"))}
+
+  dev
+  {:doc "Compile the app in watch mode and open the browser"
+   :task (run '-dev {:parallel true})}
+
+  -dev
+  {:depends [-app:watch -app:open-browser -shadow:open-dashboard]}
+
+  install
+  {:doc "Install npm packages from npm.js"
+   :task (shell "npm install")}
+
+  nuke
+  {:doc "Remove node_modules and package-lock.json"
+   :depends [clean]
+   :task (do (println "remove package-lock.json")
+             (fs/delete-if-exists "package-lock.json"))}
+
+  -shadow:open-dashboard
+  {:doc "Open the shadow-cljs dashboard in a browser"
+   :task (shell "xdg-open http://localhost:9630/dashboard")}
+
+  test
+  {:doc "Test the app"
+   :depends [install]
+   :task (run '-test {:parallel false})}
+
+  -test
+  {:depends [test:browser test:karma]}
+
+  test:browser
+  {:doc "Compile browser tests"
+   :depends [install]
+   :extra-paths ["test"]
+   :task (do (println "Compile shadow-cljs build id :browser-test")
+             (shell "npx shadow-cljs compile browser-test"))}
+
+  test:karma
+  {:doc "Compile integration tests with for Karma"
+   :depends [install]
+   :extra-paths ["test"]
+   :task (do (println "Compile shadow-cljs build id :karma-test")
+             (shell "npx shadow-cljs compile karma-test"))}}}
