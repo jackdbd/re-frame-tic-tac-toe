@@ -1,16 +1,27 @@
-/out/
-/resources/public/js/compiled/
-/target/
-/*-init.clj
-/*.log
+# Calva VS Code extension
+.calva/
 
-# Leiningen
-/.lein-*
-/.nrepl-port
+# static analyzer and linter for Clojure code
+.clj-kondo/
+
+# classpath cache
+# https://clojure.org/reference/deps_and_cli
+.cpcache/
+
+# environment variables (automatically loaded by direnv)
+.envrc
+
+# Language Server Protocol
+.lsp/
+
+# shadow-cljs cache
+.shadow-cljs/
 
 # Node.js dependencies
-/node_modules/
+node_modules/
 
-# shadow-cljs cache, port files
-/shadow-cljs.edn
-/.shadow-cljs/
+# JS compiled by shadow-cljs
+resources/public/js/compiled
+
+# compilation targets (build report, karma)
+target/

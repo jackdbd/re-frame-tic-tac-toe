@@ -1,17 +1,17 @@
 :root {
-    --player-x-color: red;
-    --player-o-color: blue;
-    --mark-stroke-width: 0.5rem;
+  --player-x-color: red;
+  --player-o-color: blue;
+  --mark-stroke-width: 0.5rem;
 }
 
 /* CSS reset for margins and paddings */
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .board {
-    background-color: white;
+  background-color: white;
 }
 
 /*
@@ -24,44 +24,44 @@ body {
   https://www.w3.org/TR/SVG/interact.html#PointerEventsProperty
 */
 .cell-clickable {
-    fill: none;
-    pointer-events: visible;
+  fill: none;
+  pointer-events: visible;
 }
 
 .player-x:hover {
-    fill: var(--player-x-color);
-    opacity: 0.5;
+  fill: var(--player-x-color);
+  opacity: 0.5;
 }
 
 .player-o:hover {
-    fill: var(--player-o-color);
-    opacity: 0.5;
+  fill: var(--player-o-color);
+  opacity: 0.5;
 }
 
 .x-mark {
-    stroke: var(--player-x-color);
-    stroke-width: var(--mark-stroke-width);
+  stroke: var(--player-x-color);
+  stroke-width: var(--mark-stroke-width);
 }
 
 .o-mark {
-    fill: none;
-    stroke: var(--player-o-color);
-    stroke-width: var(--mark-stroke-width);
+  fill: none;
+  stroke: var(--player-o-color);
+  stroke-width: var(--mark-stroke-width);
 }
 
 .track {
-    stroke: darkgray;
-    stroke-width: 0.5rem;
-    /* stroke-dasharray: 8 8; */
+  stroke: darkgray;
+  stroke-width: 0.5rem;
+  /* stroke-dasharray: 8 8; */
 }
 
 .centered {
-    display: flex;
-    align-items: center; /* Vertical center alignment */
-    justify-content: center; /* Horizontal center alignment */
+  display: flex;
+  align-items: center; /* Vertical center alignment */
+  justify-content: center; /* Horizontal center alignment */
 }
 
 .column {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
