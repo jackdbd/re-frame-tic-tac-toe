@@ -31,10 +31,8 @@
   -app:watch
   {:doc "Watch a development build of the re-frame app using shadow-cljs"
    :depends [install]
-   :extra-deps {binaryage/devtools {:mvn/version "1.0.6"}
-                day8.re-frame/re-frame-10x {:mvn/version "1.5.0"}}
    :extra-paths ["dev"]
-   :task (shell "npx shadow-cljs watch app browser-test karma-test")}
+   :task (shell "npx shadow-cljs -A:dev watch app")}
 
   audit
   {:doc "Audit npm packages"

@@ -2,8 +2,7 @@
  ["src/cljs"],
 
  :deps
- {com.google.javascript/closure-compiler-unshaded {:mvn/version "v20220803"},
-  day8.re-frame/tracing {:mvn/version "0.6.2"},
+ {com.google.javascript/closure-compiler-unshaded {:mvn/version "v20220803"}
   org.clojure/clojure {:mvn/version "1.11.1"}
   org.clojure/clojurescript {:mvn/version "1.11.60"},
   reagent/reagent {:mvn/version "1.1.1"},
@@ -11,4 +10,10 @@
   thheller/shadow-cljs {:mvn/version "2.20.5"}}
 
  :aliases
- {:neil {:project {:name re-frame-tic-tac-toe/re-frame-tic-tac-toe}}}}
+ {:dev {:extra-deps
+        {binaryage/devtools {:mvn/version "1.0.6"},
+         day8.re-frame/re-frame-10x {:mvn/version "1.5.0"}
+         day8.re-frame/tracing {:mvn/version "0.6.2"}}
+        :extra-paths ["dev"]}
+  
+  :neil {:project {:name re-frame-tic-tac-toe/re-frame-tic-tac-toe}}}}

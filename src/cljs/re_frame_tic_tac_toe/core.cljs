@@ -4,10 +4,7 @@
    [re-frame.core :as rf]
    [re-frame-tic-tac-toe.events :as events]
    [re-frame-tic-tac-toe.views :as views]
-   [re-frame-tic-tac-toe.config :as config]
-  ;  [devtools.core :as devtools]
-   ))
-
+   [re-frame-tic-tac-toe.config :as config]))
 
 (defn dev-setup []
   ;; enable https://github.com/binaryage/cljs-devtools
@@ -32,4 +29,6 @@
   (rf/dispatch-sync [::events/initialize-db])
   (when config/debug?
     (dev-setup))
-  (mount-root))
+  (mount-root)
+  (.log js/console "check that binaryage/devtools is configured")
+  (.log js/console (range 50)))
