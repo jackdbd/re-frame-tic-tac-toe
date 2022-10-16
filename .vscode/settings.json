@@ -18,7 +18,7 @@
     ".clj-kondo/": true,
     ".cpcache/": true,
     ".lsp/": true,
-    ".shadow-cljs/": true,
+    ".shadow-cljs/": false,
     "node_modules/": false
   },
   "[javascript]": {

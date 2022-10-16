@@ -1,5 +1,7 @@
 # re-frame-tic-tac-toe
 
+![CI workflow](https://github.com/jackdbd/undici/actions/workflows/ci.yaml/badge.svg)
+
 Tic tac toe implemented as a [re-frame](https://github.com/day8/re-frame) app.
 
 Live at https://re-frame-tic-tac-toe.pages.dev/
@@ -85,14 +87,18 @@ npx karma start --config karma.conf.js --reporters verbose,dots
 
 ## Deploy
 
-Deploy the app to Cloudflare Pages:
+The app is deployed to Cloudflare Pages by the [CI workflow](./.github/workflows/ci.yaml), using [Direct Upload with a GitHub Action](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/#use-github-actions).
+
+If you want to deploy the app manually, you can run use [wrangler2](https://github.com/cloudflare/wrangler2):
 
 ```sh
-bb app:deploy
-# or
 npx wrangler pages publish resources/public --project-name=$CLOUDFLARE_PAGES_PROJECT_ID
 ```
 
-## See also
+You can also use this babashka task if you want to save a few keystrokes:
 
-https://github.com/mhuebert/shadow-re-frame
+```sh
+bb app:deploy
+```
+
+npx shadow-cljs watch app --verbose
